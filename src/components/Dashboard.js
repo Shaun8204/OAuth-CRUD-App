@@ -1,85 +1,135 @@
 import React, { useState, useEffect } from "react";
-import { getCookie, deleteCookie } from "../utils/cookieUtils"; // Ensure proper imports
-import CRUD from "./CRUD";
-import { Box, Typography, Avatar, Button, Paper } from "@mui/material";
+import DataGrid, {
+  Column,
+  Editing,
+  Toolbar,
+  Item,
+} from "devextreme-react/data-grid";
+import "devextreme/dist/css/dx.light.css"; // DevExtreme CSS
+import dataJson from "../data/data.json";
+import { deleteCookie } from "../utils/cookieUtils";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const [userData, setUserData] = useState(null);
-  const [error, setError] = useState(null);
-  const [users, setUsers] = useState([
-    { name: "John", id: 1, githubId: "john123" },
-    { name: "Kane", id: 2, githubId: "Kane456" },
-    { name: "Bigshow", id: 3, githubId: "Bigshow456" },
-    { name: "AJ", id: 4, githubId: "AJ456" },
-  ]);
+  const [data, setData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = getCookie("accessToken");
-
-    if (accessToken) {
-      // Mock user data for demonstration
-      const mockUserData = {
-        login: "Shaun8204",
-        avatar_url: "https://avatars.githubusercontent.com/u/1234567?v=4",
-        name: "Shaun",
-      };
-      setUserData(mockUserData);
-    } else {
-      setError("No access token found");
-    }
+    setData(dataJson); // Load initial data from data.json
   }, []);
 
   const handleLogout = () => {
     deleteCookie("accessToken");
     deleteCookie("userData");
-    window.location.href = "https://github.com/logout";
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 1000);
+    navigate("/");
+  };
+
+  const handleAdd = (e) => {
+    const newEntry = e.data; // Get new row data
+    setData([...data, { id: data.length + 1, ...newEntry }]); // Add with unique ID
+  };
+
+  const handleEdit = (e) => {
+    const updatedData = data.map((item) =>
+      item.id === e.key ? { ...item, ...e.data } : item
+    );
+    setData(updatedData); // Update edited row
+  };
+
+  const handleDelete = (e) => {
+    const updatedData = data.filter((item) => item.id !== e.key);
+    setData(updatedData); // Remove deleted row
   };
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Dashboard
-      </Typography>
-      {error && (
-        <Typography variant="body1" color="error">
-          {error}
-        </Typography>
-      )}
-      {userData && (
-        <Paper
-          sx={{
-            p: 3,
-            mb: 4,
-            display: "flex",
-            alignItems: "center",
-            gap: 3,
-            backgroundColor: "#f5f5f5",
-          }}
-        >
-          <Avatar
-            src={userData.avatar_url}
-            alt="Avatar"
-            sx={{ width: 80, height: 80 }}
-          />
-          <Box>
-            <Typography variant="h5">Welcome, {userData.login}</Typography>
-            <Typography variant="body1">Name: {userData.name}</Typography>
-          </Box>
-        </Paper>
-      )}
-      <CRUD users={users} setUsers={setUsers} />
-      <Button
-        variant="contained"
-        color="error"
-        sx={{ mt: 4 }}
-        onClick={handleLogout} // Properly binds the function here
-      >
+    <div className="dashboard">
+      <h1>Dashboard</h1>
+      <button className="logout-button" onClick={handleLogout}>
         Logout
-      </Button>
-    </Box>
+      </button>
+      <DataGrid
+        dataSource={data}
+        keyExpr="id"
+        showBorders={true}
+        columnAutoWidth={true}
+        allowColumnResizing={true}
+        editing={{
+          mode: "popup", // Use popup for add/edit
+          allowAdding: true,
+          allowUpdating: true,
+          allowDeleting: true,
+          popup: {
+            title: "Add/Edit Data",
+            showTitle: true,
+            width: 400, // Smaller popup width
+            height: 250, // Smaller popup height
+          },
+          form: {
+            colCount: 1, // Reduce form layout to a single column
+            items: [
+              {
+                dataField: "name", // Ensure 'name' field is editable
+                label: { text: "Name" },
+              },
+              {
+                dataField: "githubId", // Add 'GitHub ID' explicitly
+                label: { text: "GitHub ID" },
+              },
+            ],
+          },
+        }}
+        onRowInserting={handleAdd}
+        onRowUpdating={handleEdit}
+        onRowRemoving={handleDelete}
+      >
+        {/* Columns with Sorting Enabled */}
+        <Column
+          dataField="id"
+          caption="ID"
+          width={50}
+          allowEditing={false}
+          allowSorting={true}
+        />
+        <Column dataField="name" caption="Name" allowSorting={true} />
+        <Column dataField="githubId" caption="GitHub ID" allowSorting={true} />
+
+        {/* Add Toolbar for Custom "Create" Button */}
+        <Toolbar>
+          <Item location="before">
+            <button
+              className="add-button"
+              onClick={() =>
+                document.querySelector(".dx-datagrid-addrow-button").click()
+              }
+            >
+              ➕ Add New Entry
+            </button>
+          </Item>
+        </Toolbar>
+      </DataGrid>
+
+      {/* Add CSS for Stylish Button */}
+      <style jsx>{`
+        .add-button {
+          background-color: #4caf50;
+          color: white;
+          font-size: 14px;
+          font-weight: bold;
+          padding: 5px 10px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .add-button:hover {
+          background-color: #45a049;
+        }
+        .dashboard {
+          padding: 20px;
+          max-width: 800px;
+          margin: auto;
+        }
+      `}</style>
+    </div>
   );
 };
 

@@ -1,0 +1,43 @@
+.dashboard {
+  padding: 20px;
+}
+
+.logout-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.form {
+  margin-bottom: 20px;
+}
+
+.form input {
+  margin-right: 10px;
+  padding: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+table th {
+  background-color: #f4f4f4;
+}
+
+button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}

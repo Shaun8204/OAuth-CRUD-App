@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { getCookie } from "./utils/cookieUtils";
 import Dashboard from "./components/Dashboard";
+import "devextreme/dist/css/dx.light.css";
+
 import Login from "./components/Login"; // Adjust the path as needed
 
 const App = () => {

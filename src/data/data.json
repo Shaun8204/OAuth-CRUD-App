@@ -1,5 +1,5 @@
 [
-  { "id": 1, "name": "Item 1" },
-  { "id": 2, "name": "Item 2" },
-  { "id": 3, "name": "Item 3" }
+  { "id": 1, "name": "Shaun", "githubId": "Shaun8204" },
+  { "id": 2, "name": "Xavier", "githubId": "Xavier59" },
+  { "id": 3, "name": "Roy", "githubId": "Roy7" }
 ]
