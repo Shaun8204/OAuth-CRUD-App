@@ -28,6 +28,31 @@
   color: #61dafb;
 }
 
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+.login-heading {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+.login-button {
+  font-size: 1.5rem;
+  padding: 15px 30px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.login-button:hover {
+  background-color: #45a049;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

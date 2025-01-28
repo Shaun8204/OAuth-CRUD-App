@@ -1,5 +1,9 @@
 [
   { "id": 1, "name": "Shaun", "githubId": "Shaun8204" },
   { "id": 2, "name": "Xavier", "githubId": "Xavier59" },
-  { "id": 3, "name": "Roy", "githubId": "Roy7" }
+  { "id": 3, "name": "Roy", "githubId": "Roy7" },
+  { "id": 4, "name": "Morgan", "githubId": "Morgan22" },
+  { "id": 5, "name": "Luffy", "githubId": "Luffy7" },
+  { "id": 6, "name": "Obito", "githubId": "Obitowws" },
+  { "id": 7, "name": "Kakashi", "githubId": "Kakashi23" }
 ]

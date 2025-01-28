@@ -11,14 +11,24 @@ import {
   Paper,
   Typography,
   Box,
+  Switch,
 } from "@mui/material";
 
 const CRUD = ({ users, setUsers }) => {
-  const [newItem, setNewItem] = useState({ name: "", id: "", githubId: "" });
+  const [newItem, setNewItem] = useState({
+    name: "",
+    id: "",
+    githubId: "",
+    active: false,
+  });
   const [editIndex, setEditIndex] = useState(null);
+  const [searchFilters, setSearchFilters] = useState({
+    name: "",
+    id: "",
+    githubId: "",
+  });
 
   useEffect(() => {
-    // Load user data from localStorage on component mount
     const savedUsers = JSON.parse(localStorage.getItem("users"));
     if (savedUsers) {
       setUsers(savedUsers);
@@ -35,7 +45,6 @@ const CRUD = ({ users, setUsers }) => {
       return;
     }
 
-    // Check for unique ID
     const isDuplicateId = users.some((user) => user.id === newItem.id);
     if (isDuplicateId) {
       alert("The ID must be unique. Please enter a different ID.");
@@ -45,7 +54,7 @@ const CRUD = ({ users, setUsers }) => {
     const updatedUsers = [...users, newItem];
     setUsers(updatedUsers);
     updateLocalStorage(updatedUsers);
-    setNewItem({ name: "", id: "", githubId: "" });
+    setNewItem({ name: "", id: "", githubId: "", active: false });
   };
 
   const handleDelete = (index) => {
@@ -60,7 +69,6 @@ const CRUD = ({ users, setUsers }) => {
   };
 
   const handleUpdate = () => {
-    // Check for unique ID if it's being edited
     const isDuplicateId = users.some(
       (user, index) => user.id === newItem.id && index !== editIndex
     );
@@ -74,9 +82,42 @@ const CRUD = ({ users, setUsers }) => {
     );
     setUsers(updatedUsers);
     updateLocalStorage(updatedUsers);
-    setNewItem({ name: "", id: "", githubId: "" });
+    setNewItem({ name: "", id: "", githubId: "", active: false });
     setEditIndex(null);
   };
+
+  const handleSearch = (key, value) => {
+    setSearchFilters({ ...searchFilters, [key]: value });
+  };
+
+  const handleDetails = (user) => {
+    alert(
+      `Details:\nName: ${user.name}\nID: ${user.id}\nGitHub ID: ${
+        user.githubId
+      }\nActive: ${user.active ? "Yes" : "No"}`
+    );
+  };
+
+  const handleCopy = (user) => {
+    const copiedUser = { ...user, id: `${user.id}_copy` };
+    const updatedUsers = [...users, copiedUser];
+    setUsers(updatedUsers);
+    updateLocalStorage(updatedUsers);
+  };
+
+  const handleToggleActive = (index) => {
+    const updatedUsers = users.map((user, i) =>
+      i === index ? { ...user, active: !user.active } : user
+    );
+    setUsers(updatedUsers);
+    updateLocalStorage(updatedUsers);
+  };
+
+  const filteredUsers = users.filter((user) =>
+    Object.keys(searchFilters).every((key) =>
+      user[key]?.toLowerCase().includes(searchFilters[key].toLowerCase())
+    )
+  );
 
   return (
     <Box sx={{ mt: 4 }}>
@@ -89,20 +130,44 @@ const CRUD = ({ users, setUsers }) => {
             <TableRow>
               <TableCell>
                 <strong>Name</strong>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  placeholder="Search Name"
+                  onChange={(e) => handleSearch("name", e.target.value)}
+                  sx={{ mt: 1, width: "100%" }}
+                />
               </TableCell>
               <TableCell>
                 <strong>ID</strong>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  placeholder="Search ID"
+                  onChange={(e) => handleSearch("id", e.target.value)}
+                  sx={{ mt: 1, width: "100%" }}
+                />
               </TableCell>
               <TableCell>
                 <strong>GitHub ID</strong>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  placeholder="Search GitHub ID"
+                  onChange={(e) => handleSearch("githubId", e.target.value)}
+                  sx={{ mt: 1, width: "100%" }}
+                />
               </TableCell>
               <TableCell>
                 <strong>Actions</strong>
               </TableCell>
+              <TableCell>
+                <strong>Active</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user, index) => (
+            {filteredUsers.map((user, index) => (
               <TableRow key={index}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.id}</TableCell>
@@ -122,9 +187,34 @@ const CRUD = ({ users, setUsers }) => {
                     color="error"
                     size="small"
                     onClick={() => handleDelete(index)}
+                    sx={{ mr: 1 }}
                   >
                     Delete
                   </Button>
+                  <Button
+                    variant="contained"
+                    color="info"
+                    size="small"
+                    onClick={() => handleDetails(user)}
+                    sx={{ mr: 1 }}
+                  >
+                    Details
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={() => handleCopy(user)}
+                  >
+                    Copy
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={user.active}
+                    onChange={() => handleToggleActive(index)}
+                    color="primary"
+                  />
                 </TableCell>
               </TableRow>
             ))}

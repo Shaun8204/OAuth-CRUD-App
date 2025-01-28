@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setCookie } from "../utils/cookieUtils";
+import { setCookie, deleteCookie } from "../utils/cookieUtils";
 
-const CLIENT_ID = "Ov23lizvvyw8K8A3AH8l"; // Your GitHub client ID
-const REDIRECT_URI = "http://localhost:3000/"; // Your redirect URL
-
+const CLIENT_ID = "Ov23lizvvyw8K8A3AH8l";
+const REDIRECT_URI = "http://localhost:3000/";
 const Login = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -41,11 +40,51 @@ const Login = () => {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
   };
 
+  const handleLogout = () => {
+    // Clear app cookies
+    deleteCookie("accessToken");
+    deleteCookie("userData");
+
+    // Navigate to GitHub logout and redirect back to your app
+    window.location.href = `https://github.com/logout?return_to=${encodeURIComponent(
+      "http://localhost:3000/"
+    )}`;
+  };
+
   return (
-    <div>
-      <h1>Login with GitHub</h1>
+    <div className="login-container">
+      <h1 className="login-heading">Login with GitHub</h1>
       {error && <p>{error}</p>}
-      <button onClick={handleLogin}>Login with GitHub</button>
+      <button className="login-button" onClick={handleLogin}>
+        Login with GitHub
+      </button>
+
+      <style jsx>{`
+        .login-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          text-align: center;
+        }
+        .login-heading {
+          font-size: 2rem;
+          margin-bottom: 20px;
+        }
+        .login-button {
+          font-size: 1.5rem;
+          padding: 15px 30px;
+          background-color: #4caf50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+        .login-button:hover {
+          background-color: #45a049;
+        }
+      `}</style>
     </div>
   );
 };
